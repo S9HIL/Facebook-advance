@@ -293,17 +293,35 @@ def validate_tokens():
                 file_content = token_file.read().decode('utf-8')
                 tokens = [t.strip() for t in file_content.split('\n') if t.strip()]
         
+        if not tokens:
+            return jsonify({"status": "error", "message": "No tokens provided"})
+        
         results = []
-        for token in tokens:
+        valid_count = 0
+        
+        for i, token in enumerate(tokens):
             name = get_account_name(token)
+            is_valid = not name.startswith('Error')
+            if is_valid:
+                valid_count += 1
+                
             results.append({
+                'index': i + 1,
                 'token': token[:20] + "..." if len(token) > 20 else token,
-                'name': name,
-                'valid': not name.startswith('Error')
+                'name': name if is_valid else "Invalid Token",
+                'valid': is_valid,
+                'status': "Valid" if is_valid else "Invalid"
             })
             time.sleep(0.5)  # Prevent rate limiting
         
-        return jsonify({"status": "success", "results": results})
+        return jsonify({
+            "status": "success", 
+            "message": f"Validated {len(tokens)} tokens. {valid_count} valid, {len(tokens) - valid_count} invalid.",
+            "results": results,
+            "total": len(tokens),
+            "valid": valid_count,
+            "invalid": len(tokens) - valid_count
+        })
         
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
@@ -315,29 +333,38 @@ def check_uid():
 
 @app.route('/check_uid_api', methods=['POST'])
 def check_uid_api():
-    """Check UID and return profile information"""
+    """Check UID and return profile information - Token required"""
     try:
         uid = request.form.get('uid')
         access_token = request.form.get('access_token', '').strip()
-        check_method = request.form.get('check_method', 'simple')
         
         if not uid:
             return jsonify({"status": "error", "message": "UID is required"})
+            
+        if not access_token:
+            return jsonify({"status": "error", "message": "Access token is required"})
         
-        # Method 1: Simple existence check (no token required)
-        if not access_token or check_method == 'simple':
-            result = check_uid_exists(uid)
-            return jsonify(result)
+        # Validate UID format
+        if not uid.isdigit():
+            return jsonify({"status": "error", "message": "Invalid UID format. Please enter a numeric Facebook User ID"})
         
-        # Method 2: Full profile check (with token)
-        else:
-            profile_name = get_profile_by_uid(uid, access_token)
-            return jsonify({
-                "status": "success",
-                "uid": uid,
-                "profile_name": profile_name,
-                "method": "full_profile"
-            })
+        # Validate access token first
+        account_name = get_account_name(access_token)
+        if 'Error' in account_name:
+            return jsonify({"status": "error", "message": f"Invalid access token: {account_name}"})
+        
+        # Get profile information using token
+        profile_name = get_profile_by_uid(uid, access_token)
+        if 'Error' in profile_name:
+            return jsonify({"status": "error", "message": f"Could not retrieve profile: {profile_name}"})
+        
+        return jsonify({
+            "status": "success",
+            "uid": uid,
+            "profile_name": profile_name,
+            "checked_by": account_name,
+            "message": f"Profile found: {profile_name}"
+        })
         
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})

@@ -269,10 +269,88 @@ function initializeFormHandlers() {
         radio.addEventListener('change', toggleMessageInput);
     });
 
+    // Check method toggle for UID check (removed - no longer used)
     // Mode toggle for E2EE
     const modeRadios = document.querySelectorAll('input[name="mode"]');
     modeRadios.forEach(radio => {
         radio.addEventListener('change', toggleEncryptionKey);
+    });
+}
+
+// Updated UID Check Handler
+function handleUidCheck(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const loadingState = document.getElementById('loadingState');
+    const profileResult = document.getElementById('profileResult');
+    const profileData = document.getElementById('profileData');
+    
+    if (!loadingState || !profileResult || !profileData) {
+        console.error('Required elements not found');
+        return;
+    }
+    
+    // Show loading
+    profileResult.style.display = 'none';
+    loadingState.style.display = 'block';
+    
+    fetch('/check_uid_api', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingState.style.display = 'none';
+        
+        if (data.status === 'success') {
+            profileData.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong><i class="fas fa-id-card me-2"></i>UID:</strong> ${data.uid}
+                    </div>
+                    <div class="col-md-6">
+                        <strong><i class="fas fa-user me-2"></i>Name:</strong> ${data.profile_name}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <strong><i class="fas fa-user-check me-2"></i>Checked by:</strong> ${data.checked_by}
+                    </div>
+                </div>
+                <div class="mt-3 p-3 rounded" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    ${data.message}
+                </div>
+            `;
+        } else {
+            profileData.innerHTML = `
+                <div class="mt-3 p-3 rounded" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Error: ${data.message}
+                </div>
+            `;
+        }
+        
+        profileResult.style.display = 'block';
+        
+        // Animate result
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(profileResult, 
+                { opacity: 0, y: 20 }, 
+                { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+            );
+        }
+    })
+    .catch(error => {
+        loadingState.style.display = 'none';
+        profileData.innerHTML = `
+            <div class="mt-3 p-3 rounded" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3);">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                Network error: ${error.message}
+            </div>
+        `;
+        profileResult.style.display = 'block';
     });
 }
 
@@ -425,7 +503,7 @@ async function handleTokenValidation(e) {
         const result = await response.json();
         
         if (result.status === 'success') {
-            displayTokenValidationResults(result.results);
+            displayTokenValidationResults(result);
         } else {
             addTerminalLine('terminal', 'error', result.message);
         }
@@ -438,53 +516,45 @@ async function handleTokenValidation(e) {
     }
 }
 
-// Handle UID check
-async function handleUidCheck(e) {
-    e.preventDefault();
-    
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    
-    // Show loading state
-    submitBtn.innerHTML = '<span class="loading"></span> Checking...';
-    submitBtn.disabled = true;
-
-    try {
-        const formData = new FormData(e.target);
-        
-        const response = await fetch('/check_uid_api', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            displayUidResult(result);
-        } else {
-            displayUidResult({ status: 'error', message: result.message });
-        }
-    } catch (error) {
-        displayUidResult({ status: 'error', message: 'An error occurred: ' + error.message });
-    } finally {
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
-}
-
-// Toggle token input method
-function toggleTokenInput(e) {
-    const method = e.target.value;
+// Token input toggle functions
+function toggleTokenInput() {
+    const tokenMethod = document.querySelector('input[name="token_method"]:checked').value;
     const manualInput = document.getElementById('token_manual_input');
     const fileInput = document.getElementById('token_file_input');
-
-    if (method === 'manual') {
+    
+    if (tokenMethod === 'manual') {
         manualInput.style.display = 'block';
         fileInput.style.display = 'none';
     } else {
         manualInput.style.display = 'none';
         fileInput.style.display = 'block';
+    }
+}
+
+function toggleMessageInput() {
+    const messageMethod = document.querySelector('input[name="message_method"]:checked').value;
+    const manualInput = document.getElementById('message_manual_input');
+    const fileInput = document.getElementById('message_file_input');
+    
+    if (messageMethod === 'manual') {
+        manualInput.style.display = 'block';
+        fileInput.style.display = 'none';
+    } else {
+        manualInput.style.display = 'none';
+        fileInput.style.display = 'block';
+    }
+}
+
+function toggleEncryptionKey() {
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const encryptionSection = document.getElementById('encryption_section');
+    
+    if (encryptionSection) {
+        if (mode === 'e2ee') {
+            encryptionSection.style.display = 'block';
+        } else {
+            encryptionSection.style.display = 'none';
+        }
     }
 }
 

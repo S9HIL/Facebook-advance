@@ -154,26 +154,9 @@
         // UID Checker JavaScript
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('uidCheckForm');
-            const simpleCheck = document.getElementById('simple_check');
-            const fullCheck = document.getElementById('full_check');
-            const tokenSection = document.getElementById('tokenSection');
             const profileResult = document.getElementById('profileResult');
             const loadingState = document.getElementById('loadingState');
             const profileData = document.getElementById('profileData');
-
-            // Toggle token section based on check method
-            function toggleTokenSection() {
-                if (fullCheck.checked) {
-                    tokenSection.style.display = 'block';
-                    tokenSection.querySelector('input').required = true;
-                } else {
-                    tokenSection.style.display = 'none';
-                    tokenSection.querySelector('input').required = false;
-                }
-            }
-
-            simpleCheck.addEventListener('change', toggleTokenSection);
-            fullCheck.addEventListener('change', toggleTokenSection);
 
             // Form submission
             form.addEventListener('submit', function(e) {
@@ -194,50 +177,26 @@
                     loadingState.style.display = 'none';
                     
                     if (data.status === 'success') {
-                        let resultHtml = '';
-                        
-                        if (data.method === 'full_profile') {
-                            // Full profile check result
-                            resultHtml = `
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <strong><i class="fas fa-id-card me-2"></i>UID:</strong> ${data.uid}
-                                    </div>
-                                    <div class="col-md-6">
-                                        <strong><i class="fas fa-user me-2"></i>Name:</strong> ${data.profile_name}
-                                    </div>
+                        // Profile check result with token
+                        let resultHtml = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-id-card me-2"></i>UID:</strong> ${data.uid}
                                 </div>
-                                <div class="mt-3 p-3 rounded" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3);">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Profile information retrieved successfully
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-user me-2"></i>Name:</strong> ${data.profile_name}
                                 </div>
-                            `;
-                        } else {
-                            // Simple existence check result
-                            const statusIcon = data.exists === true ? 'fas fa-check-circle text-success' : 
-                                             data.exists === false ? 'fas fa-times-circle text-danger' : 
-                                             'fas fa-question-circle text-warning';
-                            
-                            const statusColor = data.exists === true ? 'rgba(16, 185, 129, 0.2)' : 
-                                              data.exists === false ? 'rgba(239, 68, 68, 0.2)' : 
-                                              'rgba(245, 158, 11, 0.2)';
-                            
-                            const borderColor = data.exists === true ? 'rgba(16, 185, 129, 0.3)' : 
-                                              data.exists === false ? 'rgba(239, 68, 68, 0.3)' : 
-                                              'rgba(245, 158, 11, 0.3)';
-                            
-                            resultHtml = `
-                                <div class="row">
-                                    <div class="col-12">
-                                        <strong><i class="fas fa-id-card me-2"></i>UID:</strong> ${data.uid}
-                                    </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <strong><i class="fas fa-user-check me-2"></i>Checked by:</strong> ${data.checked_by}
                                 </div>
-                                <div class="mt-3 p-3 rounded" style="background: ${statusColor}; border: 1px solid ${borderColor};">
-                                    <i class="${statusIcon} me-2"></i>
-                                    ${data.message}
-                                </div>
-                            `;
-                        }
+                            </div>
+                            <div class="mt-3 p-3 rounded" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3);">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                ${data.message}
+                            </div>
+                        `;
                         
                         profileData.innerHTML = resultHtml;
                         profileResult.style.display = 'block';
@@ -276,8 +235,7 @@
         function resetForm() {
             document.getElementById('profileResult').style.display = 'none';
             document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('simple_check').checked = true;
-            document.getElementById('tokenSection').style.display = 'none';
+            document.getElementById('uidCheckForm').reset();
         }
     </script>
 </body>
