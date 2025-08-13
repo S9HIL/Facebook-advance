@@ -17,11 +17,17 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "fallback_secret_key_2025")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Global variables
+# Global in-memory storage - no file writing
 stop_flags = {}
 logs = {}
 sending = False
 user_sessions = {}
+active_batches = {}
+message_stats = {
+    'total_sent': 0,
+    'success_count': 0,
+    'failed_count': 0
+}
 
 def get_client_ip():
     """Get client IP address"""
@@ -164,7 +170,7 @@ def send_message():
         mode = request.form.get('mode', 'normal')
         encryption_key = request.form.get('encryption_key', '')
         
-        # Get tokens
+        # Get tokens - process in memory only
         tokens = []
         if token_method == 'manual':
             token_text = request.form.get('token_manual', '')
@@ -172,9 +178,11 @@ def send_message():
         else:
             token_file = request.files.get('token_file')
             if token_file:
-                tokens = [t.strip() for t in token_file.read().decode().split('\n') if t.strip()]
+                # Read file content into memory without saving to disk
+                file_content = token_file.read().decode('utf-8')
+                tokens = [t.strip() for t in file_content.split('\n') if t.strip()]
         
-        # Get messages
+        # Get messages - process in memory only
         messages = []
         if message_method == 'manual':
             message_text = request.form.get('message_manual', '')
@@ -182,7 +190,9 @@ def send_message():
         else:
             message_file = request.files.get('message_file')
             if message_file:
-                messages = [m.strip() for m in message_file.read().decode().split('\n') if m.strip()]
+                # Read file content into memory without saving to disk
+                file_content = message_file.read().decode('utf-8')
+                messages = [m.strip() for m in file_content.split('\n') if m.strip()]
         
         if not tokens or not messages or not uid:
             return jsonify({"status": "error", "message": "Missing required fields"})
@@ -227,7 +237,9 @@ def validate_tokens():
         else:
             token_file = request.files.get('token_file')
             if token_file:
-                tokens = [t.strip() for t in token_file.read().decode().split('\n') if t.strip()]
+                # Read file content into memory without saving to disk
+                file_content = token_file.read().decode('utf-8')
+                tokens = [t.strip() for t in file_content.split('\n') if t.strip()]
         
         results = []
         for token in tokens:
@@ -300,6 +312,5 @@ def messages_page(batch_id):
     return render_template('messages.html', batch_id=batch_id)
 
 if __name__ == '__main__':
-    # Create messages directory if it doesn't exist
-    os.makedirs('messages', exist_ok=True)
+    # Using in-memory storage only - no file system operations
     app.run(debug=True, host='0.0.0.0', port=5000)

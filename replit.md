@@ -7,6 +7,7 @@ This is a web-based Facebook automation tool built with Flask that provides func
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Storage preference: Use in-memory storage only - no file writing or session files.
 
 ## System Architecture
 
@@ -35,8 +36,8 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Storage
 - **In-Memory Storage**: Global variables for session state, logs, and control flags
-- **File System**: Local file storage for uploaded message files in `/messages` directory
-- **Session Data**: Client session tracking with IP-based identification
+- **No File System Operations**: All file uploads processed directly in memory without disk storage
+- **Session Data**: Client session tracking with IP-based identification using Flask sessions
 
 ### Security & Authentication
 - **Facebook API Integration**: OAuth-style access token validation
