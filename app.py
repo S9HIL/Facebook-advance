@@ -53,16 +53,19 @@ def encrypt_message(message, encryption_key):
     return encrypted_message
 
 def get_account_name(access_token):
-    """Get account name from Facebook Graph API"""
+    """Get account name from Facebook Graph API with optimized timeout"""
     url = "https://graph.facebook.com/v17.0/me"
     params = {'access_token': access_token}
     try:
-        response = requests.get(url, params=params)
+        # Added timeout for faster response handling
+        response = requests.get(url, params=params, timeout=10)
         if response.ok:
             data = response.json()
             return data.get('name', 'Unknown')
         else:
             return f'Error: {response.status_code}'
+    except requests.exceptions.Timeout:
+        return 'Error: Request timeout'
     except Exception as e:
         return f'Error: {str(e)}'
 
@@ -278,7 +281,7 @@ def validate_token():
 
 @app.route('/validate_tokens', methods=['POST'])
 def validate_tokens():
-    """Validate Facebook tokens"""
+    """Validate Facebook tokens with optimized performance"""
     try:
         token_method = request.form.get('token_method')
         tokens = []
@@ -299,6 +302,7 @@ def validate_tokens():
         results = []
         valid_count = 0
         
+        # Optimized validation with reduced delay and batch processing
         for i, token in enumerate(tokens):
             name = get_account_name(token)
             is_valid = not name.startswith('Error')
@@ -312,7 +316,10 @@ def validate_tokens():
                 'valid': is_valid,
                 'status': "Valid" if is_valid else "Invalid"
             })
-            time.sleep(0.5)  # Prevent rate limiting
+            
+            # Reduced delay and only sleep for every 3rd token to prevent rate limiting
+            if (i + 1) % 3 == 0:
+                time.sleep(0.2)
         
         return jsonify({
             "status": "success", 

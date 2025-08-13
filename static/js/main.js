@@ -481,19 +481,22 @@ async function handleMessageSubmit(e) {
     }
 }
 
-// Handle token validation
+// Handle token validation with progress tracking
 async function handleTokenValidation(e) {
     e.preventDefault();
     
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     
-    // Show loading state
-    submitBtn.innerHTML = '<span class="loading"></span> Validating...';
+    // Show loading state with animation
+    submitBtn.innerHTML = '<span class="loading"></span> Validating Tokens...';
     submitBtn.disabled = true;
 
     try {
         const formData = new FormData(e.target);
+        
+        // Add progress indicator
+        addTerminalLine('terminal', 'info', 'Starting token validation process...');
         
         const response = await fetch('/validate_tokens', {
             method: 'POST',
@@ -503,16 +506,19 @@ async function handleTokenValidation(e) {
         const result = await response.json();
         
         if (result.status === 'success') {
+            addTerminalLine('terminal', 'success', `Validation complete! ${result.valid} valid tokens out of ${result.total}`);
             displayTokenValidationResults(result);
         } else {
             addTerminalLine('terminal', 'error', result.message);
         }
     } catch (error) {
-        addTerminalLine('terminal', 'error', 'An error occurred: ' + error.message);
+        addTerminalLine('terminal', 'error', 'Network error occurred: ' + error.message);
     } finally {
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+        // Reset button with delay for smooth transition
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, 500);
     }
 }
 

@@ -9,6 +9,7 @@ This is a web-based Facebook automation tool built with Flask that provides func
 Preferred communication style: Simple, everyday language.
 Storage preference: Use in-memory storage only - no file writing or session files.
 UI/UX preference: Premium glass-morphism design with smooth animations and best-in-class user experience.
+Branding preference: Website title should be "FB@SAHIL_PRAJAPATI" with animated "SAHIL PRAJAPATI" text in footer.
 
 ## System Architecture
 
@@ -94,3 +95,11 @@ UI/UX preference: Premium glass-morphism design with smooth animations and best-
 - **Responsive Design**: Enhanced mobile and tablet experiences with adaptive button layouts and proper breakpoints
 - **Branding Integration**: Added "SAHIL PRAJAPATI" branding throughout terminal prompts and footer across all pages
 - **Terminal Enhancements**: Updated all terminal prompts to "SAHIL_PRAJAPATI@fb-automation:~$" with consistent styling
+
+### Latest Performance & Branding Updates (August 13, 2025)
+- **Token Validation Performance**: Optimized validation process by reducing delay from 0.5s to 0.2s per batch of 3 tokens, added 10s timeout for faster error handling
+- **Website Title Update**: Changed all page titles from "Facebook Automation" to "FB@SAHIL_PRAJAPATI" across all template files
+- **Animated Footer**: Added stunning animated "SAHIL PRAJAPATI" text in footer with gradient color shifting, pulse effect, and moving underline
+- **Enhanced User Experience**: Improved token validation feedback with progress indicators and smooth transitions
+- **Performance Optimizations**: Added CSS performance enhancements with hardware acceleration, transform optimizations, and smooth button hover effects
+- **Responsive Improvements**: Better mobile experience with optimized loading states and button animations
