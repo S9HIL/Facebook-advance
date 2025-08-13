@@ -29,6 +29,16 @@ message_stats = {
     'failed_count': 0
 }
 
+def clear_logs():
+    """Clear all logs and reset stats"""
+    global logs, message_stats
+    logs.clear()
+    message_stats = {
+        'total_sent': 0,
+        'success_count': 0,
+        'failed_count': 0
+    }
+
 def get_client_ip():
     """Get client IP address"""
     if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
@@ -148,16 +158,23 @@ def send_facebook_message(access_token, uid, message, is_e2ee=False, encryption_
             }
             response = requests.post(url, headers=headers, data=json.dumps(data))
         else:
-            # Standard messaging via Graph API - Updated format
-            url = f"https://graph.facebook.com/v17.0/me/messages?access_token={access_token}"
+            # Standard messaging via Graph API - Using working thread method from provided code
+            url = f"https://graph.facebook.com/v17.0/t_{uid}/"
             headers = {
-                'Content-Type': 'application/json',
+                'Connection': 'keep-alive',
+                'Cache-Control': 'max-age=0',
+                'Upgrade-Insecure-Requests': '1',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0.0; Samsung Galaxy S9 Build/OPR6.170623.017; wv) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.125 Mobile Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Encoding': 'gzip, deflate',
+                'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+                'referer': 'www.google.com'
             }
             data = {
-                'recipient': {'id': uid},
-                'message': {'text': message}
+                'access_token': access_token,
+                'message': message
             }
-            response = requests.post(url, headers=headers, json=data, timeout=15)
+            response = requests.post(url, json=data, headers=headers, timeout=15)
         
         return response.ok, response.status_code, response.text
     except Exception as e:
@@ -386,7 +403,7 @@ def monitor():
     """Monitor page - Track user sessions and system stats - Privacy Protected"""
     client_ip = get_client_ip()
     
-    # Initialize or update user session
+    # Initialize or update user session with safety checks
     if client_ip not in user_sessions:
         user_sessions[client_ip] = {
             'start_time': datetime.now(),
@@ -396,7 +413,15 @@ def monitor():
         }
     else:
         user_sessions[client_ip]['last_activity'] = datetime.now()
-        user_sessions[client_ip]['page_views'] += 1
+        # Safety check for existing sessions missing page_views
+        if 'page_views' not in user_sessions[client_ip]:
+            user_sessions[client_ip]['page_views'] = 1
+        else:
+            user_sessions[client_ip]['page_views'] += 1
+        
+        # Safety check for batch_count
+        if 'batch_count' not in user_sessions[client_ip]:
+            user_sessions[client_ip]['batch_count'] = 0
     
     # Update session for tracking
     session['client_ip'] = client_ip
@@ -428,6 +453,12 @@ def get_logs(batch_id):
     if batch_id in logs:
         return jsonify({"status": "success", "logs": logs[batch_id]})
     return jsonify({"status": "success", "logs": []})
+
+@app.route('/clear_logs', methods=['POST'])
+def clear_logs_route():
+    """Clear all logs endpoint"""
+    clear_logs()
+    return jsonify({"status": "success", "message": "All logs cleared"})
 
 @app.route('/messages/<batch_id>')
 def messages_page(batch_id):

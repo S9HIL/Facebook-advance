@@ -660,6 +660,51 @@ function viewLogs(batchId) {
     window.open(`/messages/${batchId}`, '_blank');
 }
 
+// Clear logs functionality
+function clearLogs() {
+    if (!confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+        return;
+    }
+    
+    fetch('/clear_logs', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Clear terminal display
+            const systemLogs = document.getElementById('systemLogs');
+            if (systemLogs) {
+                systemLogs.innerHTML = `
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">SAHIL_PRAJAPATI@fb-automation:~$</span>
+                        <span class="terminal-text">All logs cleared successfully</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">SAHIL_PRAJAPATI@fb-automation:~$</span>
+                        <span class="terminal-text">System ready for new operations...</span>
+                    </div>
+                `;
+            }
+            showStatus('success', 'All logs cleared successfully');
+        } else {
+            showStatus('error', 'Failed to clear logs');
+        }
+    })
+    .catch(error => {
+        console.error('Error clearing logs:', error);
+        showStatus('error', 'Network error while clearing logs');
+    });
+}
+
+// Initialize clear logs button on monitor page
+document.addEventListener('DOMContentLoaded', function() {
+    const clearLogsBtn = document.getElementById('clearLogs');
+    if (clearLogsBtn) {
+        clearLogsBtn.addEventListener('click', clearLogs);
+    }
+});
+
 // Display token validation results in terminal
 function displayTokenValidationResults(data) {
     const terminal = document.getElementById('terminal');
