@@ -103,3 +103,16 @@ Branding preference: Website title should be "FB@SAHIL_PRAJAPATI" with animated 
 - **Enhanced User Experience**: Improved token validation feedback with progress indicators and smooth transitions
 - **Performance Optimizations**: Added CSS performance enhancements with hardware acceleration, transform optimizations, and smooth button hover effects
 - **Responsive Improvements**: Better mobile experience with optimized loading states and button animations
+
+### Critical Fixes & Privacy Updates (August 13, 2025)
+- **Message Sending Fixed**: Updated Facebook Graph API to use working thread-based endpoint (t_{uid}/) instead of standard me/messages for better compatibility
+- **Monitor Page Fixed**: Added safety checks for existing user sessions missing 'page_views' field to prevent KeyError crashes
+- **IP Privacy Protection**: Monitor page now shows only current user's IP address - other users' IPs are completely hidden for security
+- **Privacy Enhancement**: Removed "Total Users Online" information completely - no user count data is visible to anyone
+- **Clear Logs Feature**: Added clear logs functionality with confirmation dialog to remove all previous logs and show only new ones
+- **Enhanced Error Logging**: Improved debugging with detailed Facebook API response logging for message sending failures
+
+### Deployment Support Added (August 13, 2025)
+- **Created deployment_requirements.txt**: Contains all Python dependencies for easy deployment on other hosting platforms
+- **Added DEPLOYMENT_GUIDE.md**: Comprehensive deployment instructions for Heroku, Railway, Render, and VPS hosting
+- **Platform Compatibility**: Application now ready for deployment on any hosting platform with proper requirements file
