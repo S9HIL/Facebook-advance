@@ -436,7 +436,6 @@ def monitor():
                          user_sessions=filtered_user_sessions,
                          message_stats=message_stats,
                          active_batches=active_batches,
-                         total_users_count=total_users_count,
                          current_user_ip=client_ip)
 
 @app.route('/stop_batch/<batch_id>', methods=['POST'])
