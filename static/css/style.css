@@ -1,0 +1,569 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Root Variables */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #f093fb;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --terminal-bg: rgba(0, 0, 0, 0.85);
+    --terminal-green: #00ff41;
+    --terminal-amber: #ffaa00;
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow-x: hidden;
+}
+
+/* Animated Background */
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Floating Shapes */
+.floating-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    animation: float 20s infinite linear;
+}
+
+.shape-1 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    top: 60%;
+    right: 10%;
+    animation-delay: -5s;
+}
+
+.shape-3 {
+    width: 80px;
+    height: 80px;
+    top: 30%;
+    left: 70%;
+    animation-delay: -10s;
+}
+
+.shape-4 {
+    width: 120px;
+    height: 120px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: -15s;
+}
+
+.shape-5 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    animation-delay: -8s;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-30px) rotate(120deg); }
+    66% { transform: translateY(30px) rotate(240deg); }
+    100% { transform: translateY(0px) rotate(360deg); }
+}
+
+/* Glass Navigation */
+.glass-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+    color: var(--accent-color) !important;
+}
+
+.nav-link.active {
+    color: var(--accent-color) !important;
+}
+
+/* Main Content */
+.main-content {
+    padding-top: 120px;
+    padding-bottom: 50px;
+    min-height: 100vh;
+}
+
+/* Glass Cards */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+}
+
+.card-header {
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 2rem;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--glass-border);
+    padding-bottom: 0.5rem;
+}
+
+/* Glass Inputs */
+.glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    padding: 12px 16px;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    color: white;
+}
+
+.glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Glass Buttons */
+.glass-btn {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.glass-btn:hover::before {
+    left: 100%;
+}
+
+.glass-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 25px rgba(31, 38, 135, 0.4);
+    color: white;
+}
+
+.btn-primary.glass-btn:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Glass Alerts */
+.glass-alert {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    color: white;
+}
+
+/* Terminal Styles */
+.terminal-container {
+    margin-top: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.terminal-header {
+    background: rgba(45, 45, 45, 0.95);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-button.red { background: #ff5f56; }
+.terminal-button.yellow { background: #ffbd2e; }
+.terminal-button.green { background: #27ca3f; }
+
+.terminal-title {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.terminal-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.terminal-body {
+    background: var(--terminal-bg);
+    padding: 20px;
+    min-height: 200px;
+    max-height: 500px;
+    overflow-y: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.terminal-line {
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.terminal-prompt {
+    color: var(--terminal-green);
+    font-weight: bold;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.terminal-text {
+    color: #ffffff;
+    word-break: break-all;
+}
+
+.terminal-text.success {
+    color: var(--success-color);
+}
+
+.terminal-text.error {
+    color: var(--error-color);
+}
+
+.terminal-text.warning {
+    color: var(--warning-color);
+}
+
+/* Scrollbar Styles */
+.terminal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.terminal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Stats Cards */
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-right: 1rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+/* Animations */
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form Check Styles */
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-label {
+    font-weight: 500;
+}
+
+/* Result Container */
+.result-container {
+    margin-top: 2rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Table Styles */
+.table-dark {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.table-dark th, .table-dark td {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Progress Bar */
+.progress {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 100px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .glass-card {
+        margin: 0.5rem;
+    }
+    
+    .card-header {
+        padding: 1.5rem;
+    }
+    
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .terminal-header {
+        padding: 10px 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .terminal-title {
+        font-size: 0.8rem;
+    }
+    
+    .terminal-body {
+        padding: 15px;
+        font-size: 13px;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .shape {
+        display: none;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Status Badges */
+.badge {
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5em 0.8em;
+}
+
+/* Custom Utilities */
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.glass-shadow {
+    box-shadow: var(--glass-shadow);
+}
+
+/* Focus States */
+.glass-btn:focus,
+.glass-input:focus {
+    outline: none;
+}
+
+/* Toggle Switch Styles */
+.form-switch .form-check-input {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--glass-border);
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}

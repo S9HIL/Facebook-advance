@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Validation - FB Automation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-white" href="/">
+                <i class="fab fa-facebook-messenger me-2"></i>FB Automation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white active" href="/validate_token"><i class="fas fa-check-circle me-1"></i>Validate Token</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/check_uid"><i class="fas fa-search me-1"></i>Check UID</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/monitor"><i class="fas fa-monitor-waveform me-1"></i>Monitor</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="glass-card animate-fadeIn">
+                        <div class="card-header text-center">
+                            <h1 class="display-5 fw-bold text-white mb-0">
+                                <i class="fas fa-check-circle me-3"></i>Token Validation
+                            </h1>
+                            <p class="text-light mt-2">Validate your Facebook access tokens</p>
+                        </div>
+
+                        <form id="tokenValidationForm" class="p-4">
+                            <!-- Token Input Section -->
+                            <div class="form-section mb-4">
+                                <h4 class="section-title"><i class="fas fa-key me-2"></i>Access Tokens</h4>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="token_method" id="token_manual" value="manual" checked>
+                                    <label class="form-check-label text-white" for="token_manual">Manual Entry</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="token_method" id="token_file" value="file">
+                                    <label class="form-check-label text-white" for="token_file">Upload File</label>
+                                </div>
+                                
+                                <div id="token_manual_input" class="mt-3">
+                                    <textarea class="form-control glass-input" name="tokens_manual" rows="6" placeholder="Enter access tokens (one per line)"></textarea>
+                                </div>
+                                <div id="token_file_input" class="mt-3" style="display: none;">
+                                    <input type="file" class="form-control glass-input" name="token_file" accept=".txt">
+                                </div>
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="text-center mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg glass-btn">
+                                    <i class="fas fa-check me-2"></i>Validate Tokens
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Terminal Output -->
+                        <div class="terminal-container">
+                            <div class="terminal-header">
+                                <div class="terminal-buttons">
+                                    <div class="terminal-button red"></div>
+                                    <div class="terminal-button yellow"></div>
+                                    <div class="terminal-button green"></div>
+                                </div>
+                                <span class="terminal-title">Token Validation Terminal</span>
+                            </div>
+                            <div id="terminal" class="terminal-body">
+                                <div class="terminal-line">
+                                    <span class="terminal-prompt">FB-Automation@validator:~$</span>
+                                    <span class="terminal-text">Ready to validate tokens...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
+</body>
+</html>

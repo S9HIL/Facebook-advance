@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UID Checker - FB Automation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-white" href="/">
+                <i class="fab fa-facebook-messenger me-2"></i>FB Automation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/validate_token"><i class="fas fa-check-circle me-1"></i>Validate Token</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white active" href="/check_uid"><i class="fas fa-search me-1"></i>Check UID</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/monitor"><i class="fas fa-monitor-waveform me-1"></i>Monitor</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="glass-card animate-fadeIn">
+                        <div class="card-header text-center">
+                            <h1 class="display-5 fw-bold text-white mb-0">
+                                <i class="fas fa-search me-3"></i>UID Checker
+                            </h1>
+                            <p class="text-light mt-2">Get profile information from Facebook UID</p>
+                        </div>
+
+                        <form id="uidCheckForm" class="p-4">
+                            <!-- UID Input -->
+                            <div class="form-section mb-4">
+                                <label class="form-label text-white"><i class="fas fa-user me-2"></i>Facebook UID</label>
+                                <input type="text" class="form-control glass-input" name="uid" placeholder="Enter Facebook User ID" required>
+                            </div>
+
+                            <!-- Access Token -->
+                            <div class="form-section mb-4">
+                                <label class="form-label text-white"><i class="fas fa-key me-2"></i>Access Token</label>
+                                <input type="text" class="form-control glass-input" name="access_token" placeholder="Enter your access token" required>
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="text-center mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg glass-btn">
+                                    <i class="fas fa-search me-2"></i>Check Profile
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Result Display -->
+                        <div id="profileResult" class="result-container" style="display: none;">
+                            <div class="glass-alert">
+                                <h5 class="text-white mb-3"><i class="fas fa-user-circle me-2"></i>Profile Information</h5>
+                                <div id="profileData"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

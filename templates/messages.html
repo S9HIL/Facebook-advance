@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Logs - FB Automation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-white" href="/">
+                <i class="fab fa-facebook-messenger me-2"></i>FB Automation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/validate_token"><i class="fas fa-check-circle me-1"></i>Validate Token</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/check_uid"><i class="fas fa-search me-1"></i>Check UID</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/monitor"><i class="fas fa-monitor-waveform me-1"></i>Monitor</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="glass-card animate-fadeIn">
+                        <div class="card-header text-center">
+                            <h1 class="display-5 fw-bold text-white mb-0">
+                                <i class="fas fa-chart-line me-3"></i>Message Logs
+                            </h1>
+                            <p class="text-light mt-2">Batch ID: {{ batch_id }}</p>
+                        </div>
+
+                        <div class="p-4">
+                            <!-- Controls -->
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <button class="btn btn-warning glass-btn me-2" id="stopBatch">
+                                        <i class="fas fa-stop me-1"></i>Stop Batch
+                                    </button>
+                                    <button class="btn btn-info glass-btn" id="refreshLogs">
+                                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                                    </button>
+                                </div>
+                                <div class="badge bg-success fs-6" id="batchStatus">
+                                    <i class="fas fa-play me-1"></i>Running
+                                </div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="row mb-4">
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <div class="stat-card glass-alert">
+                                        <div class="stat-content">
+                                            <div class="stat-number" id="totalSent">0</div>
+                                            <div class="stat-label">Total Sent</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <div class="stat-card glass-alert">
+                                        <div class="stat-content">
+                                            <div class="stat-number" id="successCount">0</div>
+                                            <div class="stat-label">Success</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <div class="stat-card glass-alert">
+                                        <div class="stat-content">
+                                            <div class="stat-number" id="failedCount">0</div>
+                                            <div class="stat-label">Failed</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <div class="stat-card glass-alert">
+                                        <div class="stat-content">
+                                            <div class="stat-number" id="successRate">0%</div>
+                                            <div class="stat-label">Success Rate</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Logs Terminal -->
+                            <div class="terminal-container">
+                                <div class="terminal-header">
+                                    <div class="terminal-buttons">
+                                        <div class="terminal-button red"></div>
+                                        <div class="terminal-button yellow"></div>
+                                        <div class="terminal-button green"></div>
+                                    </div>
+                                    <span class="terminal-title">Message Sending Logs</span>
+                                    <div class="terminal-actions">
+                                        <button class="btn btn-sm btn-outline-light" id="clearLogs">
+                                            <i class="fas fa-broom"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-light" id="autoScroll" data-enabled="true">
+                                            <i class="fas fa-arrow-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="messageTerminal" class="terminal-body" style="height: 400px;">
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                                        <span class="terminal-text">Initializing message sender...</span>
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                                        <span class="terminal-text">Batch {{ batch_id }} started</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        const batchId = '{{ batch_id }}';
+        let totalSent = 0;
+        let successCount = 0;
+        let failedCount = 0;
+        let autoScrollEnabled = true;
+
+        // Update logs function
+        function updateLogs() {
+            fetch(`/get_logs/${batchId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.logs) {
+                        const terminal = document.getElementById('messageTerminal');
+                        const newLogCount = data.logs.length - totalSent;
+                        
+                        if (newLogCount > 0) {
+                            // Add new logs
+                            const newLogs = data.logs.slice(totalSent);
+                            newLogs.forEach(log => {
+                                const statusClass = log.status === 'Success' ? 'success' : 'error';
+                                const statusIcon = log.status === 'Success' ? '✓' : '✗';
+                                
+                                terminal.innerHTML += `
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                                        <span class="terminal-text ${statusClass}">
+                                            [${log.timestamp}] ${statusIcon} ${log.account_name} → ${log.uid} | ${log.message}
+                                        </span>
+                                    </div>
+                                `;
+                                
+                                if (log.status === 'Success') {
+                                    successCount++;
+                                } else {
+                                    failedCount++;
+                                }
+                                totalSent++;
+                            });
+
+                            // Update stats
+                            document.getElementById('totalSent').textContent = totalSent;
+                            document.getElementById('successCount').textContent = successCount;
+                            document.getElementById('failedCount').textContent = failedCount;
+                            
+                            const successRate = totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0;
+                            document.getElementById('successRate').textContent = `${successRate}%`;
+
+                            // Auto scroll
+                            if (autoScrollEnabled) {
+                                terminal.scrollTop = terminal.scrollHeight;
+                            }
+                        }
+                    }
+                });
+        }
+
+        // Stop batch function
+        document.getElementById('stopBatch').addEventListener('click', function() {
+            fetch(`/stop_batch/${batchId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('batchStatus').innerHTML = '<i class="fas fa-stop me-1"></i>Stopped';
+                        document.getElementById('batchStatus').className = 'badge bg-danger fs-6';
+                        this.disabled = true;
+                        this.innerHTML = '<i class="fas fa-check me-1"></i>Stopped';
+                    }
+                });
+        });
+
+        // Refresh logs function
+        document.getElementById('refreshLogs').addEventListener('click', updateLogs);
+
+        // Clear logs function
+        document.getElementById('clearLogs').addEventListener('click', function() {
+            const terminal = document.getElementById('messageTerminal');
+            terminal.innerHTML = `
+                <div class="terminal-line">
+                    <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                    <span class="terminal-text">Logs cleared...</span>
+                </div>
+            `;
+            totalSent = 0;
+            successCount = 0;
+            failedCount = 0;
+            
+            // Reset stats
+            document.getElementById('totalSent').textContent = '0';
+            document.getElementById('successCount').textContent = '0';
+            document.getElementById('failedCount').textContent = '0';
+            document.getElementById('successRate').textContent = '0%';
+        });
+
+        // Auto scroll toggle
+        document.getElementById('autoScroll').addEventListener('click', function() {
+            autoScrollEnabled = !autoScrollEnabled;
+            const icon = autoScrollEnabled ? 'fas fa-arrow-down' : 'fas fa-pause';
+            this.innerHTML = `<i class="${icon}"></i>`;
+            this.dataset.enabled = autoScrollEnabled.toString();
+        });
+
+        // Update logs every 2 seconds
+        setInterval(updateLogs, 2000);
+        updateLogs();
+    </script>
+</body>
+</html>

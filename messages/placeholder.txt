@@ -1,0 +1,2 @@
+This directory is used to store message files uploaded by users.
+Please ensure proper permissions are set for file uploads.
