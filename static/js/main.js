@@ -1,62 +1,118 @@
 // Main JavaScript file for FB Automation
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize GSAP animations
-    initializeAnimations();
+    // Ensure page is visible first
+    document.body.style.visibility = 'visible';
+    document.body.style.opacity = '1';
     
-    // Initialize form handlers
+    // Wait for GSAP to load, then initialize
+    if (typeof gsap !== 'undefined') {
+        initializeAnimations();
+    } else {
+        // Fallback: wait a bit for GSAP to load
+        setTimeout(() => {
+            if (typeof gsap !== 'undefined') {
+                initializeAnimations();
+            }
+        }, 100);
+    }
+    
+    // Initialize other functionality
     initializeFormHandlers();
-    
-    // Initialize UI interactions
     initializeUIInteractions();
 });
 
 // GSAP Animations
 function initializeAnimations() {
-    // Animate glass cards on load
-    gsap.from('.glass-card', {
-        duration: 0.8,
-        y: 50,
-        opacity: 0,
-        ease: 'power2.out',
-        stagger: 0.2
+    // Check if GSAP is available
+    if (typeof gsap === 'undefined') {
+        console.log('GSAP not loaded, using CSS fallbacks');
+        return;
+    }
+
+    // Ensure elements are visible first
+    gsap.set(['.glass-card', '.navbar', '.glass-btn', '.glass-input'], { 
+        visibility: 'visible',
+        opacity: 1 
     });
 
-    // Animate navigation
-    gsap.from('.navbar', {
+    // Animate glass cards on load with better timing
+    gsap.fromTo('.glass-card', {
+        y: 30,
+        opacity: 0,
+        scale: 0.95
+    }, {
         duration: 0.6,
-        y: -100,
-        opacity: 0,
-        ease: 'power2.out'
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        ease: 'power3.out',
+        stagger: 0.15,
+        delay: 0.2
     });
 
-    // Animate floating shapes
-    gsap.to('.shape', {
-        duration: 20,
-        rotation: 360,
-        repeat: -1,
-        ease: 'none',
-        transformOrigin: 'center'
+    // Animate navigation with better timing
+    gsap.fromTo('.navbar', {
+        y: -60,
+        opacity: 0
+    }, {
+        duration: 0.5,
+        y: 0,
+        opacity: 1,
+        ease: 'power3.out'
     });
 
-    // Button hover animations
+    // Optimize floating shapes animation
+    const shapes = document.querySelectorAll('.shape');
+    if (shapes.length > 0) {
+        gsap.to('.shape', {
+            duration: 25,
+            rotation: 360,
+            repeat: -1,
+            ease: 'none',
+            transformOrigin: 'center',
+            force3D: true
+        });
+    }
+
+    // Enhanced button interactions
     document.querySelectorAll('.glass-btn').forEach(btn => {
         btn.addEventListener('mouseenter', function() {
-            gsap.to(this, {
-                duration: 0.3,
-                scale: 1.05,
-                ease: 'power2.out'
-            });
+            if (!this.disabled && typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    duration: 0.2,
+                    scale: 1.02,
+                    ease: 'power2.out'
+                });
+            }
         });
 
         btn.addEventListener('mouseleave', function() {
-            gsap.to(this, {
-                duration: 0.3,
-                scale: 1,
-                ease: 'power2.out'
-            });
+            if (typeof gsap !== 'undefined') {
+                gsap.to(this, {
+                    duration: 0.2,
+                    scale: 1,
+                    ease: 'power2.out'
+                });
+            }
         });
     });
+
+    // Animate form sections if they exist
+    const formSections = document.querySelectorAll('.form-section');
+    if (formSections.length > 0) {
+        gsap.fromTo('.form-section', {
+            y: 20,
+            opacity: 0
+        }, {
+            duration: 0.4,
+            y: 0,
+            opacity: 1,
+            ease: 'power2.out',
+            stagger: 0.1,
+            delay: 0.4
+        });
+    }
 }
 
 // Form Handlers
@@ -114,13 +170,71 @@ function initializeUIInteractions() {
         });
     });
 
-    // Auto-resize textareas
+    // Enhanced textarea interactions
     document.querySelectorAll('textarea').forEach(textarea => {
+        // Auto-resize
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+
+        // Focus animation
+        textarea.addEventListener('focus', function() {
+            gsap.to(this.parentElement, {
+                duration: 0.3,
+                scale: 1.01,
+                ease: 'power2.out'
+            });
+        });
+
+        textarea.addEventListener('blur', function() {
+            gsap.to(this.parentElement, {
+                duration: 0.3,
+                scale: 1,
+                ease: 'power2.out'
+            });
         });
     });
+
+    // Enhanced input interactions
+    document.querySelectorAll('.glass-input').forEach(input => {
+        input.addEventListener('focus', function() {
+            gsap.to(this, {
+                duration: 0.2,
+                scale: 1.005,
+                ease: 'power2.out'
+            });
+        });
+
+        input.addEventListener('blur', function() {
+            gsap.to(this, {
+                duration: 0.2,
+                scale: 1,
+                ease: 'power2.out'
+            });
+        });
+    });
+
+    // Prevent layout shifts and ensure visibility
+    setTimeout(() => {
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+        
+        // Double-check all elements are visible
+        const criticalElements = document.querySelectorAll('.navbar, .main-content, .glass-card, .glass-btn, .glass-input, .terminal-container');
+        criticalElements.forEach(el => {
+            el.style.visibility = 'visible';
+            el.style.opacity = '1';
+        });
+    }, 100);
+    
+    // Fallback visibility check
+    setTimeout(() => {
+        if (document.body.style.opacity !== '1') {
+            document.body.style.opacity = '1';
+            document.body.style.visibility = 'visible';
+        }
+    }, 1000);
 }
 
 // Handle message form submission
