@@ -661,7 +661,7 @@ function viewLogs(batchId) {
 }
 
 // Display token validation results in terminal
-function displayTokenValidationResults(results) {
+function displayTokenValidationResults(data) {
     const terminal = document.getElementById('terminal');
     
     // Clear previous results except initial lines
@@ -673,23 +673,24 @@ function displayTokenValidationResults(results) {
         }
     }
 
+    // Get the results array from the data object
+    const results = data.results || [];
+    
     addTerminalLine('terminal', 'info', `Validating ${results.length} tokens...`);
 
+    // Display results immediately without staggered delay for better performance
     results.forEach((result, index) => {
-        setTimeout(() => {
-            const status = result.valid ? 'success' : 'error';
-            const icon = result.valid ? '✓' : '✗';
-            const message = `${icon} Token ${index + 1}: ${result.name}`;
-            
-            addTerminalLine('terminal', status, message);
-        }, index * 500); // Stagger the results for dramatic effect
+        const status = result.valid ? 'success' : 'error';
+        const icon = result.valid ? '✓' : '✗';
+        const message = `${icon} Token ${index + 1}: ${result.name}`;
+        
+        addTerminalLine('terminal', status, message);
     });
 
-    setTimeout(() => {
-        const validTokens = results.filter(r => r.valid).length;
-        const invalidTokens = results.length - validTokens;
-        addTerminalLine('terminal', 'info', `Validation complete: ${validTokens} valid, ${invalidTokens} invalid`);
-    }, results.length * 500 + 1000);
+    // Show final summary
+    const validTokens = results.filter(r => r.valid).length;
+    const invalidTokens = results.length - validTokens;
+    addTerminalLine('terminal', 'info', `Validation complete: ${validTokens} valid, ${invalidTokens} invalid`);
 }
 
 // Display UID check result
