@@ -66,6 +66,53 @@ def get_account_name(access_token):
     except Exception as e:
         return f'Error: {str(e)}'
 
+def check_uid_exists(uid):
+    """Check if UID exists on Facebook without requiring access token"""
+    try:
+        # Method 1: Check via public profile endpoint
+        url = f"https://graph.facebook.com/v17.0/{uid}"
+        params = {'fields': 'id'}
+        
+        response = requests.get(url, params=params)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if 'id' in data:
+                return {
+                    'success': True, 
+                    'exists': True,
+                    'uid': data['id'],
+                    'message': 'UID exists and is valid on Facebook'
+                }
+        elif response.status_code == 803:
+            # This usually means the profile exists but is private/restricted
+            return {
+                'success': True, 
+                'exists': True,
+                'uid': uid,
+                'message': 'UID exists but profile is private or restricted'
+            }
+        elif response.status_code == 404:
+            return {
+                'success': True, 
+                'exists': False,
+                'uid': uid,
+                'message': 'UID does not exist on Facebook'
+            }
+        else:
+            # For other status codes, try alternative check
+            return {
+                'success': True,
+                'exists': 'unknown',
+                'uid': uid,
+                'message': f'Could not verify UID (Status: {response.status_code}). May exist but be private.'
+            }
+    except Exception as e:
+        return {
+            'success': False,
+            'error': f'Error checking UID: {str(e)}'
+        }
+
 def get_profile_by_uid(uid, access_token):
     """Get profile name by UID using Facebook Graph API"""
     url = f"https://graph.facebook.com/v17.0/{uid}"
@@ -84,6 +131,7 @@ def send_facebook_message(access_token, uid, message, is_e2ee=False, encryption_
     """Send message via Facebook Graph API"""
     try:
         if is_e2ee and encryption_key:
+            # E2EE messaging (experimental)
             encrypted_message = encrypt_message(message, encryption_key)
             url = f"https://www.facebook.com/messages/e2ee/t/{uid}"
             headers = {
@@ -97,13 +145,17 @@ def send_facebook_message(access_token, uid, message, is_e2ee=False, encryption_
             }
             response = requests.post(url, headers=headers, data=json.dumps(data))
         else:
-            url = f"https://graph.facebook.com/v17.0/me/messages"
-            params = {
-                'access_token': access_token,
-                'recipient': {'id': uid},
-                'message': {'text': message}
+            # Standard messaging via Graph API
+            url = "https://graph.facebook.com/v17.0/me/messages"
+            headers = {
+                'Content-Type': 'application/json',
             }
-            response = requests.post(url, json=params)
+            data = {
+                'recipient': {'id': uid},
+                'message': {'text': message},
+                'access_token': access_token
+            }
+            response = requests.post(url, headers=headers, json=data)
         
         return response.ok, response.status_code, response.text
     except Exception as e:
@@ -263,21 +315,29 @@ def check_uid():
 
 @app.route('/check_uid_api', methods=['POST'])
 def check_uid_api():
-    """Check UID and return profile name"""
+    """Check UID and return profile information"""
     try:
         uid = request.form.get('uid')
-        access_token = request.form.get('access_token')
+        access_token = request.form.get('access_token', '').strip()
+        check_method = request.form.get('check_method', 'simple')
         
-        if not uid or not access_token:
-            return jsonify({"status": "error", "message": "UID and Access Token are required"})
+        if not uid:
+            return jsonify({"status": "error", "message": "UID is required"})
         
-        profile_name = get_profile_by_uid(uid, access_token)
+        # Method 1: Simple existence check (no token required)
+        if not access_token or check_method == 'simple':
+            result = check_uid_exists(uid)
+            return jsonify(result)
         
-        return jsonify({
-            "status": "success",
-            "uid": uid,
-            "profile_name": profile_name
-        })
+        # Method 2: Full profile check (with token)
+        else:
+            profile_name = get_profile_by_uid(uid, access_token)
+            return jsonify({
+                "status": "success",
+                "uid": uid,
+                "profile_name": profile_name,
+                "method": "full_profile"
+            })
         
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})

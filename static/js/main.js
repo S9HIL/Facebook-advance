@@ -244,13 +244,22 @@ async function handleMessageSubmit(e) {
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     
+    // Validate form
+    const formData = new FormData(e.target);
+    const uid = formData.get('uid');
+    const tokens = formData.get('token_manual') || formData.get('token_file');
+    const messages = formData.get('message_manual') || formData.get('message_file');
+    
+    if (!uid || !tokens || !messages) {
+        showStatus('error', 'Please fill in all required fields: UID, tokens, and messages');
+        return;
+    }
+    
     // Show loading state
-    submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+    submitBtn.innerHTML = '<div class="loading me-2"></div> Sending Messages...';
     submitBtn.disabled = true;
 
     try {
-        const formData = new FormData(e.target);
-        
         const response = await fetch('/send_message', {
             method: 'POST',
             body: formData
@@ -264,7 +273,7 @@ async function handleMessageSubmit(e) {
             showStatus('error', result.message);
         }
     } catch (error) {
-        showStatus('error', 'An error occurred: ' + error.message);
+        showStatus('error', 'Network error: ' + error.message);
     } finally {
         // Reset button
         submitBtn.innerHTML = originalText;
@@ -390,25 +399,27 @@ function showStatus(type, message, batchId = null) {
     const statusMessage = document.getElementById('statusMessage');
     const batchControls = document.getElementById('batchControls');
 
-    let alertClass = 'glass-alert';
-    let icon = '';
+    if (!statusDisplay || !statusMessage) return;
 
-    switch (type) {
-        case 'success':
-            alertClass += ' alert-success';
-            icon = '<i class="fas fa-check-circle me-2"></i>';
-            break;
-        case 'error':
-            alertClass += ' alert-danger';
-            icon = '<i class="fas fa-times-circle me-2"></i>';
-            break;
-        case 'warning':
-            alertClass += ' alert-warning';
-            icon = '<i class="fas fa-exclamation-triangle me-2"></i>';
-            break;
-    }
+    const statusIcon = type === 'success' ? 'fas fa-check-circle text-success' : 
+                     type === 'warning' ? 'fas fa-exclamation-triangle text-warning' :
+                     'fas fa-times-circle text-danger';
+    
+    const statusColor = type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 
+                       type === 'warning' ? 'rgba(245, 158, 11, 0.2)' :
+                       'rgba(239, 68, 68, 0.2)';
+    
+    const borderColor = type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 
+                       type === 'warning' ? 'rgba(245, 158, 11, 0.3)' :
+                       'rgba(239, 68, 68, 0.3)';
 
-    statusMessage.innerHTML = `${icon}${message}`;
+    statusMessage.innerHTML = `
+        <div class="p-3 rounded" style="background: ${statusColor}; border: 1px solid ${borderColor};">
+            <i class="${statusIcon} me-2"></i>
+            ${message}
+        </div>
+    `;
+    
     statusDisplay.style.display = 'block';
 
     if (batchId && type === 'success') {
@@ -417,15 +428,17 @@ function showStatus(type, message, batchId = null) {
         // Add event listeners for batch controls
         document.getElementById('stopBatch').onclick = () => stopBatch(batchId);
         document.getElementById('viewLogs').onclick = () => viewLogs(batchId);
+    } else {
+        batchControls.style.display = 'none';
     }
 
     // Animate status display
-    gsap.from(statusDisplay, {
-        duration: 0.5,
-        y: -20,
-        opacity: 0,
-        ease: 'power2.out'
-    });
+    if (typeof gsap !== 'undefined') {
+        gsap.fromTo(statusDisplay, 
+            { opacity: 0, y: 20 }, 
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+        );
+    }
 }
 
 // Stop batch function

@@ -62,22 +62,44 @@
                         </div>
 
                         <form id="uidCheckForm" class="p-4">
+                            <!-- Check Method Selection -->
+                            <div class="form-section mb-4">
+                                <h4 class="section-title"><i class="fas fa-cogs me-2"></i>Check Method</h4>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="check_method" id="simple_check" value="simple" checked>
+                                    <label class="form-check-label text-white" for="simple_check">Simple Check (No Token Required)</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="check_method" id="full_check" value="full">
+                                    <label class="form-check-label text-white" for="full_check">Full Profile Check (Token Required)</label>
+                                </div>
+                            </div>
+
                             <!-- UID Input -->
                             <div class="form-section mb-4">
                                 <label class="form-label text-white"><i class="fas fa-user me-2"></i>Facebook UID</label>
-                                <input type="text" class="form-control glass-input" name="uid" placeholder="Enter Facebook User ID" required>
+                                <input type="text" class="form-control glass-input" name="uid" placeholder="Enter Facebook User ID (e.g., 100070243039446)" required>
+                                <div class="form-text text-light mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>Enter the numeric Facebook User ID you want to check
+                                </div>
                             </div>
 
-                            <!-- Access Token -->
-                            <div class="form-section mb-4">
+                            <!-- Access Token (conditional) -->
+                            <div class="form-section mb-4" id="tokenSection" style="display: none;">
                                 <label class="form-label text-white"><i class="fas fa-key me-2"></i>Access Token</label>
-                                <input type="text" class="form-control glass-input" name="access_token" placeholder="Enter your access token" required>
+                                <input type="text" class="form-control glass-input" name="access_token" placeholder="Enter your access token (optional for simple check)">
+                                <div class="form-text text-light mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>Required only for full profile information
+                                </div>
                             </div>
 
-                            <!-- Action Button -->
+                            <!-- Action Buttons -->
                             <div class="text-center mb-4">
-                                <button type="submit" class="btn btn-primary btn-lg glass-btn">
-                                    <i class="fas fa-search me-2"></i>Check Profile
+                                <button type="submit" class="btn btn-primary btn-lg glass-btn me-3">
+                                    <i class="fas fa-search me-2"></i>Check UID
+                                </button>
+                                <button type="reset" class="btn btn-secondary btn-lg glass-btn" onclick="resetForm()">
+                                    <i class="fas fa-redo me-2"></i>Reset
                                 </button>
                             </div>
                         </form>
@@ -85,8 +107,16 @@
                         <!-- Result Display -->
                         <div id="profileResult" class="result-container" style="display: none;">
                             <div class="glass-alert">
-                                <h5 class="text-white mb-3"><i class="fas fa-user-circle me-2"></i>Profile Information</h5>
+                                <h5 class="text-white mb-3"><i class="fas fa-user-circle me-2"></i>UID Check Result</h5>
                                 <div id="profileData"></div>
+                            </div>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div id="loadingState" class="text-center" style="display: none;">
+                            <div class="glass-alert">
+                                <div class="loading me-2"></div>
+                                <span class="text-white">Checking UID...</span>
                             </div>
                         </div>
                     </div>
@@ -98,5 +128,136 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+        // UID Checker JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('uidCheckForm');
+            const simpleCheck = document.getElementById('simple_check');
+            const fullCheck = document.getElementById('full_check');
+            const tokenSection = document.getElementById('tokenSection');
+            const profileResult = document.getElementById('profileResult');
+            const loadingState = document.getElementById('loadingState');
+            const profileData = document.getElementById('profileData');
+
+            // Toggle token section based on check method
+            function toggleTokenSection() {
+                if (fullCheck.checked) {
+                    tokenSection.style.display = 'block';
+                    tokenSection.querySelector('input').required = true;
+                } else {
+                    tokenSection.style.display = 'none';
+                    tokenSection.querySelector('input').required = false;
+                }
+            }
+
+            simpleCheck.addEventListener('change', toggleTokenSection);
+            fullCheck.addEventListener('change', toggleTokenSection);
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                
+                // Show loading
+                profileResult.style.display = 'none';
+                loadingState.style.display = 'block';
+                
+                fetch('/check_uid_api', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingState.style.display = 'none';
+                    
+                    if (data.status === 'success') {
+                        let resultHtml = '';
+                        
+                        if (data.method === 'full_profile') {
+                            // Full profile check result
+                            resultHtml = `
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong><i class="fas fa-id-card me-2"></i>UID:</strong> ${data.uid}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong><i class="fas fa-user me-2"></i>Name:</strong> ${data.profile_name}
+                                    </div>
+                                </div>
+                                <div class="mt-3 p-3 rounded" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3);">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Profile information retrieved successfully
+                                </div>
+                            `;
+                        } else {
+                            // Simple existence check result
+                            const statusIcon = data.exists === true ? 'fas fa-check-circle text-success' : 
+                                             data.exists === false ? 'fas fa-times-circle text-danger' : 
+                                             'fas fa-question-circle text-warning';
+                            
+                            const statusColor = data.exists === true ? 'rgba(16, 185, 129, 0.2)' : 
+                                              data.exists === false ? 'rgba(239, 68, 68, 0.2)' : 
+                                              'rgba(245, 158, 11, 0.2)';
+                            
+                            const borderColor = data.exists === true ? 'rgba(16, 185, 129, 0.3)' : 
+                                              data.exists === false ? 'rgba(239, 68, 68, 0.3)' : 
+                                              'rgba(245, 158, 11, 0.3)';
+                            
+                            resultHtml = `
+                                <div class="row">
+                                    <div class="col-12">
+                                        <strong><i class="fas fa-id-card me-2"></i>UID:</strong> ${data.uid}
+                                    </div>
+                                </div>
+                                <div class="mt-3 p-3 rounded" style="background: ${statusColor}; border: 1px solid ${borderColor};">
+                                    <i class="${statusIcon} me-2"></i>
+                                    ${data.message}
+                                </div>
+                            `;
+                        }
+                        
+                        profileData.innerHTML = resultHtml;
+                        profileResult.style.display = 'block';
+                        
+                        // Animate result appearance
+                        if (typeof gsap !== 'undefined') {
+                            gsap.fromTo(profileResult, 
+                                { opacity: 0, y: 20 }, 
+                                { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+                            );
+                        }
+                    } else {
+                        // Error result
+                        profileData.innerHTML = `
+                            <div class="mt-3 p-3 rounded" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3);">
+                                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                                Error: ${data.error || data.message}
+                            </div>
+                        `;
+                        profileResult.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    loadingState.style.display = 'none';
+                    profileData.innerHTML = `
+                        <div class="mt-3 p-3 rounded" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3);">
+                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                            Network error: ${error.message}
+                        </div>
+                    `;
+                    profileResult.style.display = 'block';
+                });
+            });
+        });
+
+        function resetForm() {
+            document.getElementById('profileResult').style.display = 'none';
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('simple_check').checked = true;
+            document.getElementById('tokenSection').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
