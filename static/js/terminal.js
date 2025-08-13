@@ -4,7 +4,7 @@ class Terminal {
     constructor(elementId, options = {}) {
         this.element = document.getElementById(elementId);
         this.options = {
-            prompt: 'FB-Automation@system:~$',
+            prompt: 'SAHIL_PRAJAPATI:~$',
             maxLines: 1000,
             autoScroll: true,
             typewriterSpeed: 50,
@@ -144,7 +144,6 @@ class Terminal {
                     break;
                 
                 case 'status':
-                    this.addLine('System Status:', 'info');
                     this.addLine('  Server: Online', 'success');
                     this.addLine('  Memory: 45% used', 'normal');
                     this.addLine('  CPU: 12% used', 'normal');
@@ -195,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const validationTerminal = document.getElementById('terminal');
     if (validationTerminal) {
         terminalManager.createTerminal('terminal', {
-            prompt: 'FB-Automation@validator:~$'
+            prompt: 'SAHIL_PRAJAPATI:~$'
         });
     }
 
@@ -203,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const systemLogsTerminal = document.getElementById('systemLogs');
     if (systemLogsTerminal) {
         terminalManager.createTerminal('systemLogs', {
-            prompt: 'FB-Automation@monitor:~$'
+            prompt: 'SAHIL_PRAJAPATI:~$'
         });
     }
 
@@ -211,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageTerminal = document.getElementById('messageTerminal');
     if (messageTerminal) {
         terminalManager.createTerminal('messageTerminal', {
-            prompt: 'FB-Automation@messages:~$'
+            prompt: 'SAHIL_PRAJAPATI:~$'
         });
     }
 });
