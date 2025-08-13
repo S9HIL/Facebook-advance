@@ -10,6 +10,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Loading...</p>
+        </div>
+    </div>
+
     <!-- Animated Background -->
     <div class="animated-background">
         <div class="floating-shapes">
@@ -149,16 +157,17 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary btn-lg glass-btn me-3">
-                                    <i class="fas fa-paper-plane me-2"></i>Send Messages
-                                </button>
-                                <button type="reset" class="btn btn-secondary btn-lg glass-btn me-3">
-                                    <i class="fas fa-redo me-2"></i>Reset Form
-                                </button>
-                                <a href="/check_uid" class="btn btn-info btn-lg glass-btn">
-                                    <i class="fas fa-search me-2"></i>Check UID
-                                </a>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1 text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg glass-btn animated-border">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Messages
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="reset" class="btn btn-secondary btn-lg glass-btn animated-border">
+                                        <i class="fas fa-redo me-2"></i>Reset Form
+                                    </button>
+                                </div>
                             </div>
                         </form>
 

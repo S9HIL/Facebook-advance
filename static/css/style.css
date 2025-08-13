@@ -38,6 +38,21 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
     visibility: visible !important;
     opacity: 1 !important;
+    scroll-behavior: smooth;
+}
+
+/* Prevent animation flicker on page load */
+body {
+    animation: none;
+}
+
+body.loaded {
+    animation: fadeInBody 0.5s ease-out;
+}
+
+@keyframes fadeInBody {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* Ensure critical elements are always visible */
@@ -58,6 +73,9 @@ html, body {
     background-size: 600% 600%;
     animation: gradientShift 20s ease infinite;
     will-change: background-position;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
 /* Add particle background layer */
@@ -121,6 +139,8 @@ html, body {
     pointer-events: none;
     z-index: -5;
     overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .shape {
@@ -267,43 +287,114 @@ html, body {
     }
 }
 
-.shape-2 {
-    width: 150px;
-    height: 150px;
-    top: 60%;
-    right: 10%;
-    animation-delay: -5s;
+/* Additional Performance Optimizations */
+.shape {
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
-.shape-3 {
-    width: 80px;
-    height: 80px;
-    top: 30%;
-    left: 70%;
-    animation-delay: -10s;
+/* CSS Animation Classes for Performance */
+.animate-fadeIn {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
 }
 
-.shape-4 {
-    width: 120px;
-    height: 120px;
-    bottom: 20%;
-    left: 20%;
-    animation-delay: -15s;
+.animate-slideUp {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUpFade 0.8s ease-out forwards;
 }
 
-.shape-5 {
-    width: 200px;
-    height: 200px;
-    top: 50%;
-    left: 50%;
-    animation-delay: -8s;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-@keyframes float {
-    0% { transform: translateY(0px) rotate(0deg); }
-    33% { transform: translateY(-30px) rotate(120deg); }
-    66% { transform: translateY(30px) rotate(240deg); }
-    100% { transform: translateY(0px) rotate(360deg); }
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Page Loader */
+.page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.page-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader-content {
+    text-align: center;
+    color: white;
+}
+
+.loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+.loader-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .animated-background,
+    .floating-shapes,
+    .shape {
+        animation: none !important;
+        transform: none !important;
+    }
+    
+    .animate-fadeIn,
+    .animate-slideUp {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+    
+    .loader-spinner {
+        animation: none !important;
+        border: 3px solid rgba(255, 255, 255, 0.5);
+    }
 }
 
 /* Glass Navigation */
@@ -770,6 +861,46 @@ html, body {
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
+/* Animated Border Effects */
+.animated-border {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border: 2px solid transparent;
+    transition: var(--transition-smooth);
+}
+
+.animated-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--accent-color), var(--primary-color), var(--secondary-color), var(--accent-color));
+    background-size: 300% 300%;
+    border-radius: inherit;
+    animation: borderAnimation 3s ease infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.animated-border:hover::before {
+    opacity: 1;
+}
+
+@keyframes borderAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.animated-border:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
 /* Glass Footer */
 .glass-footer {
     background: var(--glass-bg);
@@ -839,6 +970,21 @@ html, body {
     
     .glass-footer .col-md-6:last-child {
         margin-bottom: 0;
+    }
+    
+    /* Mobile button layout adjustment */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .d-flex.justify-content-between .flex-grow-1 {
+        order: 1;
+    }
+    
+    .d-flex.justify-content-between div:last-child {
+        order: 2;
+        text-align: center;
     }
 }
     

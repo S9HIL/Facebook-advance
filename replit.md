@@ -83,12 +83,14 @@ UI/UX preference: Premium glass-morphism design with smooth animations and best-
 
 ## Recent Changes (August 2025)
 
-### UI/UX Enhancement Completed
-- **Fixed Background Animation Issues**: Resolved z-index layering problems that caused UI elements to disappear
-- **Enhanced Glass-Morphism Design**: Improved backdrop blur effects, better hover states, and smooth transitions
-- **Optimized Performance**: Added CSS performance optimizations and anti-flicker techniques
-- **Responsive Design Improvements**: Enhanced mobile and tablet experiences with better breakpoints
-- **Loading System**: Implemented smooth page loader to prevent blank page issues
-- **Enhanced Animations**: Improved GSAP animations with better timing and element visibility controls
-- **Form Enhancements**: Better focus states, hover effects, and accessibility improvements
-- **Terminal Styling**: Enhanced terminal interface with custom scrollbars and improved readability
+### Major UI/UX Enhancement & Performance Optimization Completed
+- **Fixed Page Flickering**: Completely eliminated page flickering with optimized CSS animations and proper z-index layering
+- **Enhanced Glass-Morphism Design**: Premium frosted-glass containers with improved backdrop blur effects and smooth transitions
+- **Optimized Background Animations**: Implemented hardware-accelerated particle systems, gradient waves, and morphing shapes for smooth performance
+- **Fixed Main Page Layout**: Removed Check UID button from main page, repositioned Submit button (centered) and Reset button (right-aligned)
+- **Animated Button Borders**: Added premium gradient border animations with smooth hover effects and 3D transformations
+- **Page Loader System**: Implemented smooth loading screens across all pages to prevent any flickering during initialization
+- **Performance Optimizations**: Added CSS fallbacks, reduced motion support, and hardware acceleration for smooth scrolling
+- **Responsive Design**: Enhanced mobile and tablet experiences with adaptive button layouts and proper breakpoints
+- **Branding Integration**: Added "SAHIL PRAJAPATI" branding throughout terminal prompts and footer across all pages
+- **Terminal Enhancements**: Updated all terminal prompts to "SAHIL_PRAJAPATI@fb-automation:~$" with consistent styling

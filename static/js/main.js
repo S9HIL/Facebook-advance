@@ -1,77 +1,91 @@
 // Main JavaScript file for FB Automation
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Ensure page is visible first
+    // Handle page loader
+    const loader = document.querySelector('.page-loader');
+    
+    // Hide loader after a short delay to prevent flickering
+    setTimeout(() => {
+        if (loader) {
+            loader.classList.add('hidden');
+            // Remove loader from DOM after animation
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+        
+        // Add loaded class for CSS animations
+        document.body.classList.add('loaded');
+        
+        // Initialize performance-optimized animations
+        initializeOptimizedAnimations();
+    }, 300);
+    
+    // Ensure critical elements are always visible
     document.body.style.visibility = 'visible';
     document.body.style.opacity = '1';
     
-    // Wait for GSAP to load, then initialize
-    if (typeof gsap !== 'undefined') {
-        initializeAnimations();
-    } else {
-        // Fallback: wait a bit for GSAP to load
-        setTimeout(() => {
-            if (typeof gsap !== 'undefined') {
-                initializeAnimations();
-            }
-        }, 100);
-    }
-    
-    // Initialize other functionality
+    // Initialize other functionality immediately
     initializeFormHandlers();
     initializeUIInteractions();
 });
 
-// Enhanced GSAP Animations with Particle System
-function initializeAnimations() {
-    // Check if GSAP is available
-    if (typeof gsap === 'undefined') {
-        console.log('GSAP not loaded, using CSS fallbacks');
+function initializeOptimizedAnimations() {
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (prefersReducedMotion) {
+        document.body.classList.add('reduced-motion');
         return;
     }
 
+    // Use CSS animations for better performance
+    const cards = document.querySelectorAll('.glass-card');
+    const buttons = document.querySelectorAll('.glass-btn');
+    
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate-fadeIn');
+    });
+    
+    buttons.forEach((button, index) => {
+        button.style.animationDelay = `${0.6 + index * 0.1}s`;
+        button.classList.add('animate-slideUp');
+    });
+
+    // Initialize GSAP animations only if available
+    if (typeof gsap !== 'undefined') {
+        initializeGSAPAnimations();
+    }
+}
+
+// Enhanced GSAP Animations (fallback for complex animations)
+function initializeGSAPAnimations() {
     // Ensure elements are visible first
-    gsap.set(['.glass-card', '.navbar', '.glass-btn', '.glass-input'], { 
+    gsap.set(['.navbar', '.terminal-container'], { 
         visibility: 'visible',
         opacity: 1 
     });
 
-    // Create dynamic particles
+    // Create subtle particle effects
     createDynamicParticles();
 
-    // Animate glass cards on load with better timing
-    gsap.fromTo('.glass-card', {
-        y: 30,
-        opacity: 0,
-        scale: 0.95,
-        rotationX: 10
-    }, {
-        duration: 0.8,
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        rotationX: 0,
-        ease: 'power3.out',
-        stagger: 0.15,
-        delay: 0.2
-    });
-
-    // Animate navigation with better timing
+    // Animate navigation with subtle effect
     gsap.fromTo('.navbar', {
-        y: -60,
-        opacity: 0
+        y: -20,
+        opacity: 0.8
     }, {
         duration: 0.6,
         y: 0,
         opacity: 1,
-        ease: 'back.out(1.7)'
+        ease: 'power2.out'
     });
 
-    // Enhanced floating shapes with staggered animations
+    // Enhanced floating shapes with performance optimization
     const shapes = document.querySelectorAll('.shape');
     if (shapes.length > 0) {
         shapes.forEach((shape, index) => {
-            // Individual rotation and float animations
+            // Optimized floating animation
             gsap.to(shape, {
                 duration: 20 + (index * 5),
                 rotation: 360,
