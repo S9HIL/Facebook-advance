@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
     <!-- Animated Background -->
@@ -133,11 +134,11 @@
                                 </div>
                                 <div id="messageTerminal" class="terminal-body" style="height: 400px;">
                                     <div class="terminal-line">
-                                        <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                                        <span class="terminal-prompt">SAHIL_PRAJAPATI@fb-automation:~$</span>
                                         <span class="terminal-text">Initializing message sender...</span>
                                     </div>
                                     <div class="terminal-line">
-                                        <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                                        <span class="terminal-prompt">SAHIL_PRAJAPATI@fb-automation:~$</span>
                                         <span class="terminal-text">Batch {{ batch_id }} started</span>
                                     </div>
                                 </div>
@@ -177,7 +178,7 @@
                                 
                                 terminal.innerHTML += `
                                     <div class="terminal-line">
-                                        <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                                        <span class="terminal-prompt">SAHIL_PRAJAPATI@fb-automation:~$</span>
                                         <span class="terminal-text ${statusClass}">
                                             [${log.timestamp}] ${statusIcon} ${log.account_name} → ${log.uid} | ${log.message}
                                         </span>
@@ -231,7 +232,7 @@
             const terminal = document.getElementById('messageTerminal');
             terminal.innerHTML = `
                 <div class="terminal-line">
-                    <span class="terminal-prompt">FB-Automation@messages:~$</span>
+                    <span class="terminal-prompt">SAHIL_PRAJAPATI@fb-automation:~$</span>
                     <span class="terminal-text">Logs cleared...</span>
                 </div>
             `;
@@ -258,5 +259,23 @@
         setInterval(updateLogs, 2000);
         updateLogs();
     </script>
+
+    <!-- Footer with Branding -->
+    <footer class="glass-footer">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-white">
+                        <i class="fas fa-code me-2"></i>Developed by <strong>SAHIL PRAJAPATI</strong>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-light">
+                        <i class="fas fa-shield-alt me-2"></i>Premium Facebook Automation Tool
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

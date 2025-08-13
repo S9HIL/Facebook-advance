@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeUIInteractions();
 });
 
-// GSAP Animations
+// Enhanced GSAP Animations with Particle System
 function initializeAnimations() {
     // Check if GSAP is available
     if (typeof gsap === 'undefined') {
@@ -36,16 +36,21 @@ function initializeAnimations() {
         opacity: 1 
     });
 
+    // Create dynamic particles
+    createDynamicParticles();
+
     // Animate glass cards on load with better timing
     gsap.fromTo('.glass-card', {
         y: 30,
         opacity: 0,
-        scale: 0.95
+        scale: 0.95,
+        rotationX: 10
     }, {
-        duration: 0.6,
+        duration: 0.8,
         y: 0,
         opacity: 1,
         scale: 1,
+        rotationX: 0,
         ease: 'power3.out',
         stagger: 0.15,
         delay: 0.2
@@ -56,32 +61,47 @@ function initializeAnimations() {
         y: -60,
         opacity: 0
     }, {
-        duration: 0.5,
+        duration: 0.6,
         y: 0,
         opacity: 1,
-        ease: 'power3.out'
+        ease: 'back.out(1.7)'
     });
 
-    // Optimize floating shapes animation
+    // Enhanced floating shapes with staggered animations
     const shapes = document.querySelectorAll('.shape');
     if (shapes.length > 0) {
-        gsap.to('.shape', {
-            duration: 25,
-            rotation: 360,
-            repeat: -1,
-            ease: 'none',
-            transformOrigin: 'center',
-            force3D: true
+        shapes.forEach((shape, index) => {
+            // Individual rotation and float animations
+            gsap.to(shape, {
+                duration: 20 + (index * 5),
+                rotation: 360,
+                repeat: -1,
+                ease: 'none',
+                transformOrigin: 'center',
+                force3D: true
+            });
+            
+            // Add subtle pulsing effect
+            gsap.to(shape, {
+                duration: 3 + (index * 0.5),
+                scale: 1.1,
+                opacity: 0.8,
+                repeat: -1,
+                yoyo: true,
+                ease: 'power2.inOut'
+            });
         });
     }
 
-    // Enhanced button interactions
+    // Enhanced button interactions with 3D effects
     document.querySelectorAll('.glass-btn').forEach(btn => {
         btn.addEventListener('mouseenter', function() {
             if (!this.disabled && typeof gsap !== 'undefined') {
                 gsap.to(this, {
-                    duration: 0.2,
-                    scale: 1.02,
+                    duration: 0.3,
+                    scale: 1.05,
+                    y: -3,
+                    rotationY: 5,
                     ease: 'power2.out'
                 });
             }
@@ -90,28 +110,116 @@ function initializeAnimations() {
         btn.addEventListener('mouseleave', function() {
             if (typeof gsap !== 'undefined') {
                 gsap.to(this, {
-                    duration: 0.2,
+                    duration: 0.3,
                     scale: 1,
+                    y: 0,
+                    rotationY: 0,
                     ease: 'power2.out'
                 });
             }
         });
     });
 
-    // Animate form sections if they exist
+    // Animate form sections with enhanced effects
     const formSections = document.querySelectorAll('.form-section');
     if (formSections.length > 0) {
         gsap.fromTo('.form-section', {
-            y: 20,
-            opacity: 0
+            y: 25,
+            opacity: 0,
+            rotationX: 5
         }, {
-            duration: 0.4,
+            duration: 0.6,
             y: 0,
             opacity: 1,
-            ease: 'power2.out',
+            rotationX: 0,
+            ease: 'power3.out',
             stagger: 0.1,
             delay: 0.4
         });
+    }
+
+    // Add terminal animation enhancement
+    const terminalBodies = document.querySelectorAll('.terminal-body');
+    terminalBodies.forEach(terminal => {
+        gsap.fromTo(terminal, {
+            opacity: 0,
+            scale: 0.98
+        }, {
+            duration: 0.5,
+            opacity: 1,
+            scale: 1,
+            ease: 'power2.out',
+            delay: 0.6
+        });
+    });
+}
+
+// Create Dynamic Particle System
+function createDynamicParticles() {
+    const particleContainer = document.querySelector('.floating-shapes');
+    if (!particleContainer) return;
+
+    // Create additional floating particles
+    for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.className = `dynamic-particle particle-${i}`;
+        particle.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 6 + 2}px;
+            height: ${Math.random() * 6 + 2}px;
+            background: rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1});
+            border-radius: 50%;
+            pointer-events: none;
+            top: ${Math.random() * 100}%;
+            left: ${Math.random() * 100}%;
+            box-shadow: 0 0 ${Math.random() * 10 + 5}px rgba(255, 255, 255, 0.3);
+        `;
+        
+        particleContainer.appendChild(particle);
+
+        // Animate each particle with GSAP
+        if (typeof gsap !== 'undefined') {
+            gsap.to(particle, {
+                duration: Math.random() * 15 + 10,
+                x: (Math.random() - 0.5) * 200,
+                y: (Math.random() - 0.5) * 150,
+                opacity: Math.random() * 0.5 + 0.2,
+                scale: Math.random() * 0.8 + 0.6,
+                repeat: -1,
+                yoyo: true,
+                ease: 'power1.inOut'
+            });
+        }
+    }
+
+    // Create orbiting particles around the center
+    for (let i = 0; i < 5; i++) {
+        const orbitParticle = document.createElement('div');
+        orbitParticle.className = `orbit-particle orbit-${i}`;
+        orbitParticle.style.cssText = `
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(102, 126, 234, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            top: 50%;
+            left: 50%;
+            transform-origin: ${50 + i * 30}px 0px;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+        `;
+        
+        particleContainer.appendChild(orbitParticle);
+
+        if (typeof gsap !== 'undefined') {
+            gsap.to(orbitParticle, {
+                duration: 20 + i * 5,
+                rotation: 360,
+                repeat: -1,
+                ease: 'none',
+                transformOrigin: `${50 + i * 30}px 0px`
+            });
+        }
     }
 }
 
