@@ -148,17 +148,16 @@ def send_facebook_message(access_token, uid, message, is_e2ee=False, encryption_
             }
             response = requests.post(url, headers=headers, data=json.dumps(data))
         else:
-            # Standard messaging via Graph API
-            url = "https://graph.facebook.com/v17.0/me/messages"
+            # Standard messaging via Graph API - Updated format
+            url = f"https://graph.facebook.com/v17.0/me/messages?access_token={access_token}"
             headers = {
                 'Content-Type': 'application/json',
             }
             data = {
                 'recipient': {'id': uid},
-                'message': {'text': message},
-                'access_token': access_token
+                'message': {'text': message}
             }
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, json=data, timeout=15)
         
         return response.ok, response.status_code, response.text
     except Exception as e:
@@ -184,14 +183,20 @@ def send_messages_continuously(tokens, uid, messages, prompt, delay, is_e2ee, en
                 access_token, uid, full_message, is_e2ee, encryption_key
             )
             
+            # Enhanced logging with response details for debugging
             log_entry = {
                 "timestamp": time.strftime('%Y-%m-%d %H:%M:%S'),
                 "account_name": account_name,
                 "status": "Success" if success else "Failed",
                 "status_code": status_code,
                 "message": full_message[:50] + "..." if len(full_message) > 50 else full_message,
-                "uid": uid
+                "uid": uid,
+                "error_details": response_text if not success else None
             }
+            
+            # Debug logging for message failures
+            if not success:
+                logging.error(f"Message failed - Status: {status_code}, Response: {response_text}, UID: {uid}, Token: {access_token[:20]}...")
             
             logs.setdefault(batch_id, []).append(log_entry)
             message_index += 1
@@ -378,7 +383,7 @@ def check_uid_api():
 
 @app.route('/monitor')
 def monitor():
-    """Monitor page - Track user sessions and system stats"""
+    """Monitor page - Track user sessions and system stats - Privacy Protected"""
     client_ip = get_client_ip()
     
     # Initialize or update user session
@@ -396,10 +401,18 @@ def monitor():
     # Update session for tracking
     session['client_ip'] = client_ip
     
+    # Privacy protection: Only show current user's IP, hide others
+    filtered_user_sessions = {client_ip: user_sessions[client_ip]}
+    
+    # Show total count without exposing other IPs
+    total_users_count = len(user_sessions)
+    
     return render_template('monitor.html', 
-                         user_sessions=user_sessions,
+                         user_sessions=filtered_user_sessions,
                          message_stats=message_stats,
-                         active_batches=active_batches)
+                         active_batches=active_batches,
+                         total_users_count=total_users_count,
+                         current_user_ip=client_ip)
 
 @app.route('/stop_batch/<batch_id>', methods=['POST'])
 def stop_batch(batch_id):

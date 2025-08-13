@@ -189,6 +189,47 @@ body.loaded {
     backface-visibility: hidden;
 }
 
+/* Info Cards for Monitor Page */
+.info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.info-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-size: 20px;
+}
+
+.info-content h6 {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.info-content .badge {
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
 /* CSS Animation Classes for Performance */
 .animate-fadeIn {
     opacity: 0;
