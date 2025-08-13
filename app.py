@@ -344,12 +344,28 @@ def check_uid_api():
 
 @app.route('/monitor')
 def monitor():
-    """Monitor page - IP restricted"""
-    client_ip = session.get('client_ip')
-    if not client_ip or client_ip not in user_sessions:
-        return "Access Denied: Unauthorized IP", 403
+    """Monitor page - Track user sessions and system stats"""
+    client_ip = get_client_ip()
     
-    return render_template('monitor.html', user_sessions=user_sessions)
+    # Initialize or update user session
+    if client_ip not in user_sessions:
+        user_sessions[client_ip] = {
+            'start_time': datetime.now(),
+            'last_activity': datetime.now(),
+            'page_views': 1,
+            'batch_count': 0
+        }
+    else:
+        user_sessions[client_ip]['last_activity'] = datetime.now()
+        user_sessions[client_ip]['page_views'] += 1
+    
+    # Update session for tracking
+    session['client_ip'] = client_ip
+    
+    return render_template('monitor.html', 
+                         user_sessions=user_sessions,
+                         message_stats=message_stats,
+                         active_batches=active_batches)
 
 @app.route('/stop_batch/<batch_id>', methods=['POST'])
 def stop_batch(batch_id):
